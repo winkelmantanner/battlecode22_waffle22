@@ -8,8 +8,8 @@ import battlecode.common.*;
  * is created!
  */
 public strictfp class RobotPlayer {
-	
-	static Robot ai = null;
+    
+    static Robot ai = null;
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
@@ -29,14 +29,14 @@ public strictfp class RobotPlayer {
         rc.setIndicatorString("Hello world!");
         
         switch (rc.getType()) {
-	        case ARCHON:     ai = new Archon(rc);    break;
-	        case MINER:      ai = new Miner(rc);     break;
-	        case SOLDIER:    ai = new Soldier(rc);   break;
-	        case LABORATORY: ai = new Laboratory(rc);break;
-	        case WATCHTOWER: ai = new Watchtower(rc);break;
-	        case BUILDER:	 ai = new Builder(rc);   break;
-	        case SAGE:       ai = new Sage(rc);      break;
-	    }
+            case ARCHON:     ai = new Archon(rc);    break;
+            case MINER:      ai = new Miner(rc);     break;
+            case SOLDIER:    ai = new Soldier(rc);   break;
+            case LABORATORY: ai = new Laboratory(rc);break;
+            case WATCHTOWER: ai = new Watchtower(rc);break;
+            case BUILDER:    ai = new Builder(rc);   break;
+            case SAGE:       ai = new Sage(rc);      break;
+        }
 
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
@@ -73,79 +73,4 @@ public strictfp class RobotPlayer {
 
         // Your code should never reach here (unless it's intentional)! Self-destruction imminent...
     }
-
-    /**
-     * Run a single turn for an Archon.
-     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
-     */
-//    static void runArchon(RobotController rc) throws GameActionException {
-//        // Pick a direction to build in.
-//        Direction dir = directions[rng.nextInt(directions.length)];
-//        if (rng.nextBoolean()) {
-//            // Let's try to build a miner.
-//            rc.setIndicatorString("Trying to build a miner");
-//            if (rc.canBuildRobot(RobotType.MINER, dir)) {
-//                rc.buildRobot(RobotType.MINER, dir);
-//            }
-//        } else {
-//            // Let's try to build a soldier.
-//            rc.setIndicatorString("Trying to build a soldier");
-//            if (rc.canBuildRobot(RobotType.SOLDIER, dir)) {
-//                rc.buildRobot(RobotType.SOLDIER, dir);
-//            }
-//        }
-//    }
-
-    /**
-     * Run a single turn for a Miner.
-     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
-     */
-//    static void runMiner(RobotController rc) throws GameActionException {
-//        // Try to mine on squares around us.
-//        MapLocation me = rc.getLocation();
-//        for (int dx = -1; dx <= 1; dx++) {
-//            for (int dy = -1; dy <= 1; dy++) {
-//                MapLocation mineLocation = new MapLocation(me.x + dx, me.y + dy);
-//                // Notice that the Miner's action cooldown is very low.
-//                // You can mine multiple times per turn!
-//                while (rc.canMineGold(mineLocation)) {
-//                    rc.mineGold(mineLocation);
-//                }
-//                while (rc.canMineLead(mineLocation)) {
-//                    rc.mineLead(mineLocation);
-//                }
-//            }
-//        }
-//
-//        // Also try to move randomly.
-//        Direction dir = directions[rng.nextInt(directions.length)];
-//        if (rc.canMove(dir)) {
-//            rc.move(dir);
-//            System.out.println("I moved!");
-//        }
-//    }
-
-    /**
-     * Run a single turn for a Soldier.
-     * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
-     */
-//    static void runSoldier(RobotController rc) throws GameActionException {
-//        // Try to attack someone
-//        int radius = rc.getType().actionRadiusSquared;
-//        Team opponent = rc.getTeam().opponent();
-//        RobotInfo[] enemies = rc.senseNearbyRobots(radius, opponent);
-//        if (enemies.length > 0) {
-//            MapLocation toAttack = enemies[0].location;
-//            if (rc.canAttack(toAttack)) {
-//                rc.attack(toAttack);
-//            }
-//        }
-//
-//        // Also try to move randomly.
-//        Direction dir = directions[rng.nextInt(directions.length)];
-//        if (rc.canMove(dir)) {
-//            rc.move(dir);
-//            System.out.println("I moved!");
-//        }
-//    }
 }
