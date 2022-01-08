@@ -1,7 +1,6 @@
 package tannerplayer1;
 
 import battlecode.common.*;
-import java.util.Random;
 
 /**
  * RobotPlayer is the class that describes your main robot strategy.
@@ -9,33 +8,8 @@ import java.util.Random;
  * is created!
  */
 public strictfp class RobotPlayer {
-
-    /**
-     * We will use this variable to count the number of turns this robot has been alive.
-     * You can use static variables like this to save any information you want. Keep in mind that even though
-     * these variables are static, in Battlecode they aren't actually shared between your robots.
-     */
-    static int turnCount = 0;
-
-    /**
-     * A random number generator.
-     * We will use this RNG to make some random moves. The Random class is provided by the java.util.Random
-     * import at the top of this file. Here, we *seed* the RNG with a constant number (6147); this makes sure
-     * we get the same sequence of numbers every time this code is run. This is very useful for debugging!
-     */
-    static final Random rng = new Random(6147);
-
-    /** Array containing all the possible movement directions. */
-    static final Direction[] directions = {
-        Direction.NORTH,
-        Direction.NORTHEAST,
-        Direction.EAST,
-        Direction.SOUTHEAST,
-        Direction.SOUTH,
-        Direction.SOUTHWEST,
-        Direction.WEST,
-        Direction.NORTHWEST,
-    };
+	
+	static Robot ai = null;
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
@@ -53,14 +27,21 @@ public strictfp class RobotPlayer {
 
         // You can also use indicators to save debug notes in replays.
         rc.setIndicatorString("Hello world!");
+        
+        switch (rc.getType()) {
+	        case ARCHON:     ai = new Archon(rc);    break;
+	        case MINER:      ai = new Miner(rc);     break;
+	        case SOLDIER:    ai = new Soldier(rc);   break;
+	        case LABORATORY: ai = new Laboratory(rc);break;
+	        case WATCHTOWER: ai = new Watchtower(rc);break;
+	        case BUILDER:	 ai = new Builder(rc);   break;
+	        case SAGE:       ai = new Sage(rc);      break;
+	    }
 
         while (true) {
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
             // loop, we call Clock.yield(), signifying that we've done everything we want to do.
-
-            turnCount += 1;  // We have now been alive for one more turn!
-            System.out.println("Age: " + turnCount + "; Location: " + rc.getLocation());
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode.
             try {
@@ -68,15 +49,7 @@ public strictfp class RobotPlayer {
                 // different types. Here, we separate the control depending on the RobotType, so we can
                 // use different strategies on different robots. If you wish, you are free to rewrite
                 // this into a different control structure!
-                switch (rc.getType()) {
-                    case ARCHON:     runArchon(rc);  break;
-                    case MINER:      runMiner(rc);   break;
-                    case SOLDIER:    runSoldier(rc); break;
-                    case LABORATORY: // Examplefuncsplayer doesn't use any of these robot types below.
-                    case WATCHTOWER: // You might want to give them a try!
-                    case BUILDER:
-                    case SAGE:       break;
-                }
+                ai.runRobot();
             } catch (GameActionException e) {
                 // Oh no! It looks like we did something illegal in the Battlecode world. You should
                 // handle GameActionExceptions judiciously, in case unexpected events occur in the game
@@ -105,74 +78,74 @@ public strictfp class RobotPlayer {
      * Run a single turn for an Archon.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    static void runArchon(RobotController rc) throws GameActionException {
-        // Pick a direction to build in.
-        Direction dir = directions[rng.nextInt(directions.length)];
-        if (rng.nextBoolean()) {
-            // Let's try to build a miner.
-            rc.setIndicatorString("Trying to build a miner");
-            if (rc.canBuildRobot(RobotType.MINER, dir)) {
-                rc.buildRobot(RobotType.MINER, dir);
-            }
-        } else {
-            // Let's try to build a soldier.
-            rc.setIndicatorString("Trying to build a soldier");
-            if (rc.canBuildRobot(RobotType.SOLDIER, dir)) {
-                rc.buildRobot(RobotType.SOLDIER, dir);
-            }
-        }
-    }
+//    static void runArchon(RobotController rc) throws GameActionException {
+//        // Pick a direction to build in.
+//        Direction dir = directions[rng.nextInt(directions.length)];
+//        if (rng.nextBoolean()) {
+//            // Let's try to build a miner.
+//            rc.setIndicatorString("Trying to build a miner");
+//            if (rc.canBuildRobot(RobotType.MINER, dir)) {
+//                rc.buildRobot(RobotType.MINER, dir);
+//            }
+//        } else {
+//            // Let's try to build a soldier.
+//            rc.setIndicatorString("Trying to build a soldier");
+//            if (rc.canBuildRobot(RobotType.SOLDIER, dir)) {
+//                rc.buildRobot(RobotType.SOLDIER, dir);
+//            }
+//        }
+//    }
 
     /**
      * Run a single turn for a Miner.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    static void runMiner(RobotController rc) throws GameActionException {
-        // Try to mine on squares around us.
-        MapLocation me = rc.getLocation();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                MapLocation mineLocation = new MapLocation(me.x + dx, me.y + dy);
-                // Notice that the Miner's action cooldown is very low.
-                // You can mine multiple times per turn!
-                while (rc.canMineGold(mineLocation)) {
-                    rc.mineGold(mineLocation);
-                }
-                while (rc.canMineLead(mineLocation)) {
-                    rc.mineLead(mineLocation);
-                }
-            }
-        }
-
-        // Also try to move randomly.
-        Direction dir = directions[rng.nextInt(directions.length)];
-        if (rc.canMove(dir)) {
-            rc.move(dir);
-            System.out.println("I moved!");
-        }
-    }
+//    static void runMiner(RobotController rc) throws GameActionException {
+//        // Try to mine on squares around us.
+//        MapLocation me = rc.getLocation();
+//        for (int dx = -1; dx <= 1; dx++) {
+//            for (int dy = -1; dy <= 1; dy++) {
+//                MapLocation mineLocation = new MapLocation(me.x + dx, me.y + dy);
+//                // Notice that the Miner's action cooldown is very low.
+//                // You can mine multiple times per turn!
+//                while (rc.canMineGold(mineLocation)) {
+//                    rc.mineGold(mineLocation);
+//                }
+//                while (rc.canMineLead(mineLocation)) {
+//                    rc.mineLead(mineLocation);
+//                }
+//            }
+//        }
+//
+//        // Also try to move randomly.
+//        Direction dir = directions[rng.nextInt(directions.length)];
+//        if (rc.canMove(dir)) {
+//            rc.move(dir);
+//            System.out.println("I moved!");
+//        }
+//    }
 
     /**
      * Run a single turn for a Soldier.
      * This code is wrapped inside the infinite loop in run(), so it is called once per turn.
      */
-    static void runSoldier(RobotController rc) throws GameActionException {
-        // Try to attack someone
-        int radius = rc.getType().actionRadiusSquared;
-        Team opponent = rc.getTeam().opponent();
-        RobotInfo[] enemies = rc.senseNearbyRobots(radius, opponent);
-        if (enemies.length > 0) {
-            MapLocation toAttack = enemies[0].location;
-            if (rc.canAttack(toAttack)) {
-                rc.attack(toAttack);
-            }
-        }
-
-        // Also try to move randomly.
-        Direction dir = directions[rng.nextInt(directions.length)];
-        if (rc.canMove(dir)) {
-            rc.move(dir);
-            System.out.println("I moved!");
-        }
-    }
+//    static void runSoldier(RobotController rc) throws GameActionException {
+//        // Try to attack someone
+//        int radius = rc.getType().actionRadiusSquared;
+//        Team opponent = rc.getTeam().opponent();
+//        RobotInfo[] enemies = rc.senseNearbyRobots(radius, opponent);
+//        if (enemies.length > 0) {
+//            MapLocation toAttack = enemies[0].location;
+//            if (rc.canAttack(toAttack)) {
+//                rc.attack(toAttack);
+//            }
+//        }
+//
+//        // Also try to move randomly.
+//        Direction dir = directions[rng.nextInt(directions.length)];
+//        if (rc.canMove(dir)) {
+//            rc.move(dir);
+//            System.out.println("I moved!");
+//        }
+//    }
 }
