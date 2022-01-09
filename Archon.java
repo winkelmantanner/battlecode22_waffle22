@@ -7,12 +7,7 @@ public class Archon extends Building {
         super(rc);
     }
     
-    RobotType typeToBuild = RobotType.MINER;
-    public static RobotType [] ARCHON_LEAD_BUILDABLE_TYPES = {
-        RobotType.MINER,
-        RobotType.BUILDER,
-        RobotType.SOLDIER
-    };
+    RobotType typeToBuild = RobotType.MINER /* miner first */;
     
     @Override
     public void runTypeSpecific() throws GameActionException {
@@ -21,7 +16,7 @@ public class Archon extends Building {
             final Direction randomDir = Utils.choice(rng, Direction.allDirections());
             if(rc.canBuildRobot(typeToBuild, randomDir)) {
                 rc.buildRobot(typeToBuild, randomDir);
-                typeToBuild = Utils.choice(rng, ARCHON_LEAD_BUILDABLE_TYPES);
+                typeToBuild = Utils.choice(rng, new RobotType[] {RobotType.MINER, RobotType.SOLDIER});
                 break;
             }
         }

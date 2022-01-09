@@ -6,6 +6,13 @@ abstract public class Droid extends Robot {
     public Droid(RobotController rc) {
         super(rc);
     }
+    
+    protected void simpleTryMoveToward(MapLocation l) throws GameActionException {
+        Direction d = rc.getLocation().directionTo(l);
+        if(rc.canMove(d)) {
+            rc.move(d);
+        }
+    }
 
     public void runMobilitySpecific() throws GameActionException {
         

@@ -9,15 +9,30 @@ public class Miner extends Droid {
     
     @Override
     public void runTypeSpecific() throws GameActionException {
-    
         for(MapLocation locWithLead : rc.senseNearbyLocationsWithLead(rc.getType().actionRadiusSquared)) {
-            while (rc.canMineLead(locWithLead)) {
+            while (
+                rc.canSenseLocation(locWithLead)
+                && rc.senseLead(locWithLead) > 1
+                && rc.canMineLead(locWithLead)
+            ) {
                 rc.mineLead(locWithLead);
             }
         }
-        for(MapLocation locWithLead : rc.senseNearbyLocationsWithGold(rc.getType().actionRadiusSquared)) {
-            while (rc.canMineGold(locWithLead)) {
-                rc.mineGold(locWithLead);
+        for(MapLocation locWithGold : rc.senseNearbyLocationsWithGold(rc.getType().actionRadiusSquared)) {
+            while (rc.canMineGold(locWithGold)) {
+                rc.mineGold(locWithGold);
+            }
+        }
+        
+
+        for(MapLocation locWithGold : rc.senseNearbyLocationsWithGold(rc.getType().visionRadiusSquared)) {
+            simpleTryMoveToward(locWithGold);
+        }
+        for(MapLocation locWithLead : rc.senseNearbyLocationsWithLead(rc.getType().visionRadiusSquared)) {
+            if(rc.canSenseLocation(locWithLead)
+                && rc.senseLead(locWithLead) > GameConstants.ADD_LEAD
+            ) {
+                simpleTryMoveToward(locWithLead);
             }
         }
     }
