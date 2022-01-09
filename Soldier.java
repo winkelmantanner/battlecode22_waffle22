@@ -1,4 +1,4 @@
-package tannerplayer1;
+package tannerplayer;
 
 import battlecode.common.*;
 
@@ -10,7 +10,7 @@ public class Soldier extends Droid {
     @Override
     public void runTypeSpecific() throws GameActionException {
         for(RobotInfo enemyRbt : rc.senseNearbyRobots(
-            rc.getType().actionRadiusSquared,
+            rc.getType().visionRadiusSquared,
             rc.getTeam().opponent()
         )) {
             simpleTryMoveToward(enemyRbt.getLocation());
@@ -19,5 +19,7 @@ public class Soldier extends Droid {
                 break;
             }
         }
+        
+        simpleExploreMove();
     }
 }

@@ -1,4 +1,4 @@
-package tannerplayer1;
+package tannerplayer;
 
 import battlecode.common.*;
 
