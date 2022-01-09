@@ -9,6 +9,23 @@ public class Soldier extends Droid {
     
     @Override
     public void runTypeSpecific() throws GameActionException {
+        RobotInfo leader = null;
+        for(RobotInfo friendlyRbt : rc.senseNearbyRobots(
+            rc.getType().visionRadiusSquared,
+            rc.getTeam()
+        )) {
+            if(friendlyRbt.type.equals(RobotType.SOLDIER)
+                && (leader == null
+                    || friendlyRbt.ID < leader.ID
+                )
+            ) {
+                leader = friendlyRbt;
+            }
+        }
+        if(leader != null) {
+            simpleTryMoveToward(leader.getLocation());
+        }
+        
         for(RobotInfo enemyRbt : rc.senseNearbyRobots(
             rc.getType().visionRadiusSquared,
             rc.getTeam().opponent()
