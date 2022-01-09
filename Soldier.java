@@ -13,6 +13,7 @@ public class Soldier extends Droid {
             rc.getType().actionRadiusSquared,
             rc.getTeam().opponent()
         )) {
+            simpleTryMoveToward(enemyRbt.getLocation());
             if (rc.canAttack(enemyRbt.getLocation())) {
                 rc.attack(enemyRbt.getLocation());
                 break;
