@@ -21,7 +21,7 @@ public class Archon extends Building {
             ) {
                 rc.buildRobot(typeToBuild, randomDir);
                 numRobotsBuilt++;
-                typeToBuild = Utils.choice(rng, new RobotType[] {RobotType.MINER, RobotType.SOLDIER});
+                typeToBuild = Utils.choice(rng, new RobotType[] {RobotType.MINER, RobotType.SOLDIER, RobotType.BUILDER});
                 break;
             }
         }
