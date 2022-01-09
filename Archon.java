@@ -25,5 +25,14 @@ public class Archon extends Building {
                 break;
             }
         }
+        
+        for(RobotInfo rbt : rc.senseNearbyRobots(rc.getType().actionRadiusSquared, rc.getTeam())) {
+            if(rbt.health < rbt.type.health + rc.getType().getDamage/*returns negative*/(rc.getLevel())
+                && rc.canRepair(rbt.location)
+            ) {
+                rc.repair(rbt.location);
+                break;
+            }
+        }
     }
 }
