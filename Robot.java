@@ -34,4 +34,8 @@ abstract public class Robot {
         Direction.NORTHWEST,
     };
     
+    static final int BEST_SOLDIER_DAMAGE_DONE_IDX = 0;
+    static final int BEST_SOLDIER_LOC_X_IDX = 1;
+    static final int BEST_SOLDIER_LOC_Y_IDX = 2;
+    static final int BEST_SOLDIER_ROUND_IDX = 3;
 }
