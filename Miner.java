@@ -33,7 +33,7 @@ public class Miner extends Droid {
             }
         }
         if(bestLoc != null) {
-            simpleTryMoveToward(bestLoc);
+            stepAvoidingRubble(bestLoc);
         }
         
         boolean didMine = false;

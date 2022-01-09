@@ -23,14 +23,14 @@ public class Soldier extends Droid {
             }
         }
         if(leader != null) {
-            simpleTryMoveToward(leader.getLocation());
+            stepAvoidingRubble(leader.getLocation());
         }
         
         for(RobotInfo enemyRbt : rc.senseNearbyRobots(
             rc.getType().visionRadiusSquared,
             rc.getTeam().opponent()
         )) {
-            simpleTryMoveToward(enemyRbt.getLocation());
+            stepAvoidingRubble(enemyRbt.getLocation());
             if (rc.canAttack(enemyRbt.getLocation())) {
                 rc.attack(enemyRbt.getLocation());
                 break;
