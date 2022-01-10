@@ -11,6 +11,15 @@ public class Archon extends Building {
     
     int numRobotsBuilt = 0;
     
+    RobotType [] ARCHON_BUILD_CHOOSER = {
+        RobotType.MINER,
+        RobotType.MINER,
+        RobotType.SOLDIER,
+        RobotType.SOLDIER,
+        RobotType.SOLDIER,
+        RobotType.BUILDER
+    };
+    
     @Override
     public void runTypeSpecific() throws GameActionException {
         
@@ -21,7 +30,7 @@ public class Archon extends Building {
             ) {
                 rc.buildRobot(typeToBuild, randomDir);
                 numRobotsBuilt++;
-                typeToBuild = Utils.choice(rng, new RobotType[] {RobotType.MINER, RobotType.SOLDIER, RobotType.BUILDER});
+                typeToBuild = Utils.choice(rng, ARCHON_BUILD_CHOOSER);
                 break;
             }
         }
