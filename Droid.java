@@ -54,10 +54,7 @@ abstract public class Droid extends Robot {
     protected boolean simpleExploreMove() throws GameActionException {
         if(exploreTarget == null
             || rc.canSenseLocation(exploreTarget)
-            || (
-                rc.isMovementReady()
-                && !rc.canMove(rc.getLocation().directionTo(exploreTarget))
-            )
+            || !rc.onTheMap(rc.adjacentLocation(rc.getLocation().directionTo(exploreTarget)))
         ) {
             exploreTarget = new MapLocation(
                 rng.nextInt(2 * rc.getMapWidth()) - (rc.getMapWidth() / 2),
