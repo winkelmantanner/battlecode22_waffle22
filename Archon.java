@@ -10,11 +10,11 @@ public class Archon extends Building {
     RobotType typeToBuild = RobotType.MINER /* miner first */;
     
     int numRobotsBuilt = 0;
+    int numMinersBuilt = 0;
     
+    static final int NUM_MINERS_TO_BUILD_AT_BEGINNING = 4;
     RobotType [] ARCHON_BUILD_CHOOSER = {
         RobotType.MINER,
-        RobotType.MINER,
-        RobotType.SOLDIER,
         RobotType.SOLDIER,
         RobotType.SOLDIER,
         RobotType.BUILDER
@@ -30,7 +30,14 @@ public class Archon extends Building {
             ) {
                 rc.buildRobot(typeToBuild, randomDir);
                 numRobotsBuilt++;
-                typeToBuild = Utils.choice(rng, ARCHON_BUILD_CHOOSER);
+                if(typeToBuild.equals(RobotType.MINER)) {
+                    numMinersBuilt++;
+                }
+                if(numMinersBuilt < NUM_MINERS_TO_BUILD_AT_BEGINNING) {
+                    typeToBuild = RobotType.MINER;
+                } else {
+                    typeToBuild = Utils.choice(rng, ARCHON_BUILD_CHOOSER);
+                }
                 break;
             }
         }
