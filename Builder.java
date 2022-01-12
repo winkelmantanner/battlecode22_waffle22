@@ -15,6 +15,6 @@ public class Builder extends Droid {
             rc.disintegrate();
         }
         
-        simpleExploreMove();
+        exploreMove();
     }
 }
