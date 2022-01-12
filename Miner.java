@@ -12,33 +12,30 @@ public class Miner extends Droid {
     @Override
     public void runTypeSpecific() throws GameActionException {
 
-        // MOVE TOWARD MINEABLES
-        double minDistSqr = 12345;
+        double maxValue = 0;
         MapLocation bestLoc = null;
-        // senseNearbyLocationsWithGold is implemented at https://github.com/battlecode/battlecode22/blob/6318ff4e853afff50e97a90611bd595a68afb5fc/engine/src/main/battlecode/world/RobotControllerImpl.java#L358
         for(MapLocation locWithGold : rc.senseNearbyLocationsWithGold(rc.getType().visionRadiusSquared)) {
-            if(rc.getLocation().distanceSquaredTo(locWithGold) < minDistSqr) {
-                minDistSqr = rc.getLocation().distanceSquaredTo(locWithGold);
+            if(rc.canSenseLocation(locWithGold)
+                && rc.senseGold(locWithGold) > 0
+                && rc.senseGold(locWithGold) > maxValue / LEAD_VALUE_PER_GOLD_VALUE
+            ) {
                 bestLoc = locWithGold;
+                maxValue = rc.senseGold(locWithGold) * LEAD_VALUE_PER_GOLD_VALUE;
             }
         }
-        if(bestLoc == null) { // go for lead only if there is no gold
-            for(MapLocation locWithLead : rc.senseNearbyLocationsWithLead(rc.getType().visionRadiusSquared)) {
-                if(rc.canSenseLocation(locWithLead)
-                    && rc.senseLead(locWithLead) > GameConstants.ADD_LEAD
-                    && rc.getLocation().distanceSquaredTo(locWithLead) < minDistSqr
-                ) {
-                    minDistSqr = rc.getLocation().distanceSquaredTo(locWithLead);
-                    bestLoc = locWithLead;
-                }
+        for(MapLocation locWithLead : rc.senseNearbyLocationsWithLead(rc.getType().visionRadiusSquared)) {
+            if(rc.canSenseLocation(locWithLead)
+                && rc.senseLead(locWithLead) > maxValue
+                && rc.senseLead(locWithLead) > GameConstants.ADD_LEAD
+            ) {
+                bestLoc = locWithLead;
+                maxValue = rc.senseLead(locWithLead);
             }
         }
         if(bestLoc != null) {
             stepAvoidingRubble(bestLoc);
         }
         
-        
-        // MINE
         boolean didMine = false;
         for(MapLocation locWithLead : rc.senseNearbyLocationsWithLead(rc.getType().actionRadiusSquared)) {
             while (
@@ -57,8 +54,6 @@ public class Miner extends Droid {
             }
         }
         
-        
-        // EXPLORE IF NO MINEABLES
         if(!didMine) {
             exploreMove();
         }
