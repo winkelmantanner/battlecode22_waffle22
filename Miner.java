@@ -55,7 +55,7 @@ public class Miner extends Droid {
         }
         
         if(!didMine) {
-            simpleExploreMove();
+            exploreMove();
         }
     }
 }

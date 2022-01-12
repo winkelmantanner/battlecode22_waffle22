@@ -62,6 +62,6 @@ public class Soldier extends Droid {
 //                + " WAS " + (rc.getRoundNum() - rc.readSharedArray(BEST_SOLDIER_ROUND_IDX)) + " ROUNDS AGO"
 //            );
         }
-        simpleExploreMove();
+        exploreMove();
     }
 }
