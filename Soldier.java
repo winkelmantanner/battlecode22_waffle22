@@ -36,7 +36,7 @@ public class Soldier extends Droid {
     }
     
     public static double amountCloser(MapLocation targetLocation, MapLocation measuredLocation, MapLocation myLocation) {
-        return (myLocation.distanceSquaredTo(targetLocation) - measuredLocation.distanceSquaredTo(targetLocation))
+        return (double)(myLocation.distanceSquaredTo(targetLocation) - measuredLocation.distanceSquaredTo(targetLocation))
             / (1 + myLocation.distanceSquaredTo(targetLocation));
     }
     
@@ -107,7 +107,7 @@ public class Soldier extends Droid {
                     value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
                 }
                 
-                value += (double)3 * amountCloser(exploreTarget, adjLoc, rc.getLocation());
+//                value += (double)3 * amountCloser(exploreTarget, adjLoc, rc.getLocation());
                 
                 MapLocation targetLocOrNull = getBestSoldierLocOrNull();
                 if(targetLocOrNull != null) {
@@ -154,9 +154,6 @@ public class Soldier extends Droid {
                 rc.writeSharedArray(BEST_SOLDIER_LOC_Y_IDX, rc.getLocation().y);
                 rc.writeSharedArray(BEST_SOLDIER_ROUND_IDX, rc.getRoundNum());
             }
-        }
-        if(rc.getRoundNum() - lastTargetRbtRound < 10) {
-            stepAvoidingRubble(lastTargetRbtLoc);
         }
     }
 }
