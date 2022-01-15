@@ -50,8 +50,7 @@ abstract public class Droid extends Robot {
         return did_move;
     }
     
-    MapLocation exploreTarget = null;
-    protected boolean exploreMove() throws GameActionException {
+    protected void updateExploreTarget() throws GameActionException {
         if(exploreTarget == null
             || rc.canSenseLocation(exploreTarget)
             || !rc.onTheMap(rc.adjacentLocation(rc.getLocation().directionTo(exploreTarget)))
@@ -61,6 +60,11 @@ abstract public class Droid extends Robot {
                 rng.nextInt(2 * rc.getMapHeight()) - (rc.getMapHeight() / 2)
             );
         }
+    }
+    
+    MapLocation exploreTarget = null;
+    protected boolean exploreMove() throws GameActionException {
+        updateExploreTarget();
         return stepAvoidingRubble(exploreTarget);
     }
 
