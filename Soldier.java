@@ -107,7 +107,7 @@ public class Soldier extends Droid {
                     value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
                 }
                 
-//                value += (double)3 * amountCloser(exploreTarget, adjLoc, rc.getLocation());
+                value -= adjLocRubbleScalar;
                 
                 MapLocation targetLocOrNull = getBestSoldierLocOrNull();
                 if(targetLocOrNull != null) {
