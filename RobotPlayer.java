@@ -34,6 +34,7 @@ public strictfp class RobotPlayer {
         }
 
         while (true) {
+            final int roundNumBefore = rc.getRoundNum();
             // This code runs during the entire lifespan of the robot, which is why it is in an infinite
             // loop. If we ever leave this loop and return from run(), the robot dies! At the end of the
             // loop, we call Clock.yield(), signifying that we've done everything we want to do.
@@ -59,6 +60,9 @@ public strictfp class RobotPlayer {
                 e.printStackTrace();
 
             } finally {
+                if(rc.getRoundNum() != roundNumBefore) {
+                    System.out.println("ROUND NUM INCREASED FROM " + roundNumBefore + " TO " + rc.getRoundNum());
+                }
                 // Signify we've done everything we want to do, thereby ending our turn.
                 // This will make our code wait until the next turn, and then perform this loop again.
                 Clock.yield();
