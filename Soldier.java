@@ -1,6 +1,9 @@
 package tannerplayer;
 
 import battlecode.common.*;
+import java.util.Set;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class Soldier extends Droid {
     public Soldier(RobotController rc) {
@@ -40,80 +43,60 @@ public class Soldier extends Droid {
             / (1 + myLocation.distanceSquaredTo(targetLocation));
     }
     
-    @Override
-    public void runTypeSpecific() throws GameActionException {
-        friendlySoldiersLength = 0;
-        enemySoldiersLength = 0;
-        friendlyNonsoldiersLength = 0;
-        enemyNonsoldiersLength = 0;
-        for(RobotInfo rbt : rc.senseNearbyRobots()) {
-            if(rbt.getType().equals(RobotType.SOLDIER)) {
-                if(rbt.getTeam().equals(rc.getTeam())) {
-                    friendlySoldiers[friendlySoldiersLength] = rbt;
-                    friendlySoldiersLength++;
+    protected double evaluateDirForMove(Direction d) throws GameActionException {
+        double value = 0;
+        MapLocation adjLoc = rc.adjacentLocation(d);
+        final double adjLocRubbleScalar = Utils.rubbleFormulaWithoutFloor(rc.senseRubble(adjLoc));
+        for(int enemySoldierIdx = 0; enemySoldierIdx < enemySoldiersLength; enemySoldierIdx++) {
+            RobotInfo enemySoldier = enemySoldiers[enemySoldierIdx];
+            if(enemySoldier.location.distanceSquaredTo(adjLoc) <= enemySoldier.type.actionRadiusSquared) {
+                if(friendlySoldiersLength < enemySoldiersLength) { // The calling soldier is not included in friendlySoldiersLength
+                    value -= adjLocRubbleScalar
+                        / Utils.rubbleFormulaWithoutFloor(rc.senseRubble(enemySoldier.location));
                 } else {
-                    enemySoldiers[enemySoldiersLength] = rbt;
-                    enemySoldiersLength++;
-                }
-            } else {
-                if(rbt.getTeam().equals(rc.getTeam())) {
-                    friendlyNonsoldiers[friendlyNonsoldiersLength] = rbt;
-                    friendlyNonsoldiersLength++;
-                } else {
-                    enemyNonsoldiers[enemyNonsoldiersLength] = rbt;
-                    enemyNonsoldiersLength++;
+                    value += Utils.rubbleFormulaWithoutFloor(rc.senseRubble(enemySoldier.location))
+                        / adjLocRubbleScalar;
                 }
             }
         }
-        updateExploreTarget();
+        
+        for(int friendlySoldierIdx = 0; friendlySoldierIdx < friendlySoldiersLength; friendlySoldierIdx++) {
+            value += (double)1
+                / adjLoc.distanceSquaredTo(friendlySoldiers[friendlySoldierIdx].location)
+                / adjLocRubbleScalar;
+        }
+        
+    //                final double ratioOfHealthLost = (double)(rc.getType().health - rc.getHealth()) / rc.getType().health;
+    //                for(int friendlyNonsoldierIdx = 0; friendlyNonsoldierIdx < friendlyNonsoldiersLength; friendlyNonsoldierIdx++) {
+    //                    RobotInfo friendlyNonsoldier = friendlyNonsoldiers[friendlyNonsoldierIdx];
+    //                    if(friendlyNonsoldier.type.equals(RobotType.ARCHON)
+    //                            && adjLoc.distanceSquaredTo(friendlyNonsoldier.location) > friendlyNonsoldier.type.actionRadiusSquared
+    //                    ) {
+    //                        value += 10 * ratioOfHealthLost * amountCloser(spawnLoc, adjLoc, rc.getLocation());
+    //                    }
+    //                }
+    //                
+        for(int enemyNonsoldierIdx = 0; enemyNonsoldierIdx < enemyNonsoldiersLength; enemyNonsoldierIdx++) {
+            RobotInfo enemyNonsoldier = enemyNonsoldiers[enemyNonsoldierIdx];
+            value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
+        }
+        
+        value -= adjLocRubbleScalar;
+        
+        MapLocation targetLocOrNull = getBestSoldierLocOrNull();
+        if(targetLocOrNull != null) {
+            value += (double)10 * amountCloser(targetLocOrNull, adjLoc, rc.getLocation());
+        }
+        
+        return value;
+    }
+    
+    protected void soldierMove(Direction [] directionsToConsider) throws GameActionException {
         Direction bestDir = null;
         double bestDirValue = -12345;
-        for(Direction d : directions) {
+        for(Direction d : directionsToConsider) {
             if(rc.canMove(d)) {
-                double value = 0;
-                MapLocation adjLoc = rc.adjacentLocation(d);
-                final double adjLocRubbleScalar = Utils.rubbleFormulaWithoutFloor(rc.senseRubble(adjLoc));
-                for(int enemySoldierIdx = 0; enemySoldierIdx < enemySoldiersLength; enemySoldierIdx++) {
-                    RobotInfo enemySoldier = enemySoldiers[enemySoldierIdx];
-                    if(enemySoldier.location.distanceSquaredTo(adjLoc) <= enemySoldier.type.actionRadiusSquared) {
-                        if(friendlySoldiersLength < enemySoldiersLength) { // The calling soldier is not included in friendlySoldiersLength
-                            value -= adjLocRubbleScalar
-                                / Utils.rubbleFormulaWithoutFloor(rc.senseRubble(enemySoldier.location));
-                        } else {
-                            value += Utils.rubbleFormulaWithoutFloor(rc.senseRubble(enemySoldier.location))
-                                / adjLocRubbleScalar;
-                        }
-                    }
-                }
-                
-                for(int friendlySoldierIdx = 0; friendlySoldierIdx < friendlySoldiersLength; friendlySoldierIdx++) {
-                    value += (double)1
-                        / adjLoc.distanceSquaredTo(friendlySoldiers[friendlySoldierIdx].location)
-                        / adjLocRubbleScalar;
-                }
-                
-//                final double ratioOfHealthLost = (double)(rc.getType().health - rc.getHealth()) / rc.getType().health;
-//                for(int friendlyNonsoldierIdx = 0; friendlyNonsoldierIdx < friendlyNonsoldiersLength; friendlyNonsoldierIdx++) {
-//                    RobotInfo friendlyNonsoldier = friendlyNonsoldiers[friendlyNonsoldierIdx];
-//                    if(friendlyNonsoldier.type.equals(RobotType.ARCHON)
-//                            && adjLoc.distanceSquaredTo(friendlyNonsoldier.location) > friendlyNonsoldier.type.actionRadiusSquared
-//                    ) {
-//                        value += 10 * ratioOfHealthLost * amountCloser(spawnLoc, adjLoc, rc.getLocation());
-//                    }
-//                }
-//                
-                for(int enemyNonsoldierIdx = 0; enemyNonsoldierIdx < enemyNonsoldiersLength; enemyNonsoldierIdx++) {
-                    RobotInfo enemyNonsoldier = enemyNonsoldiers[enemyNonsoldierIdx];
-                    value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
-                }
-                
-                value -= adjLocRubbleScalar;
-                
-                MapLocation targetLocOrNull = getBestSoldierLocOrNull();
-                if(targetLocOrNull != null) {
-                    value += (double)10 * amountCloser(targetLocOrNull, adjLoc, rc.getLocation());
-                }
-                
+                final double value = evaluateDirForMove(d);
                 if(value > bestDirValue) {
                     bestDir = d;
                     bestDirValue = value;
@@ -123,7 +106,9 @@ public class Soldier extends Droid {
         if(bestDir != null) {
             rc.move(bestDir);
         }
-        
+    }
+    
+    protected void soldierAttack() throws GameActionException {
         RobotInfo targetRbt = null;
         double bestTargetValue = -12345;
         for(RobotInfo enemyRbt : rc.senseNearbyRobots(
@@ -155,5 +140,49 @@ public class Soldier extends Droid {
                 rc.writeSharedArray(BEST_SOLDIER_ROUND_IDX, rc.getRoundNum());
             }
         }
+    }
+    
+    @Override
+    public void runTypeSpecific() throws GameActionException {
+        friendlySoldiersLength = 0;
+        enemySoldiersLength = 0;
+        friendlyNonsoldiersLength = 0;
+        enemyNonsoldiersLength = 0;
+        final Direction[] allDirections = Direction.allDirections();
+        Set<Direction> safeDirs = new HashSet<Direction>(Arrays.asList(allDirections));
+        for(RobotInfo rbt : rc.senseNearbyRobots()) {
+            if(rbt.getType().equals(RobotType.SOLDIER)) {
+                if(rbt.getTeam().equals(rc.getTeam())) {
+                    friendlySoldiers[friendlySoldiersLength] = rbt;
+                    friendlySoldiersLength++;
+                } else {
+                    enemySoldiers[enemySoldiersLength] = rbt;
+                    enemySoldiersLength++;
+                    for(Direction d : allDirections) {
+                        if(rc.adjacentLocation(d).distanceSquaredTo(rbt.location) <= rbt.type.actionRadiusSquared) {
+                            safeDirs.remove(d);
+                        }
+                    }
+                }
+            } else {
+                if(rbt.getTeam().equals(rc.getTeam())) {
+                    friendlyNonsoldiers[friendlyNonsoldiersLength] = rbt;
+                    friendlyNonsoldiersLength++;
+                } else {
+                    enemyNonsoldiers[enemyNonsoldiersLength] = rbt;
+                    enemyNonsoldiersLength++;
+                }
+            }
+        }
+        updateExploreTarget();
+        
+        if(safeDirs.size() > 0 && !safeDirs.contains(Direction.CENTER)) {
+            soldierAttack();
+            soldierMove(safeDirs.toArray(new Direction[safeDirs.size()]));
+        } else {
+            soldierMove(directions);
+            soldierAttack();
+        }
+        
     }
 }
