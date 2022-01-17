@@ -154,7 +154,7 @@ public class Soldier extends Droid {
         friendlyNonsoldiersLength = 0;
         enemyNonsoldiersLength = 0;
         for(RobotInfo rbt : rc.senseNearbyRobots()) {
-            if(rbt.getType().equals(RobotType.SOLDIER)) {
+            if(rbt.getType().canAttack()) {
                 if(rbt.getTeam().equals(rc.getTeam())) {
                     friendlySoldiers[friendlySoldiersLength] = rbt;
                     friendlySoldiersLength++;
