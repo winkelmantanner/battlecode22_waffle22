@@ -150,31 +150,40 @@ public class Soldier extends Droid {
         enemyNonsoldiersLength = 0;
         final Direction[] allDirections = Direction.allDirections();
         Set<Direction> safeDirs = new HashSet<Direction>(Arrays.asList(allDirections));
-        for(RobotInfo rbt : rc.senseNearbyRobots()) {
-            if(rbt.getType().equals(RobotType.SOLDIER)) {
-                if(rbt.getTeam().equals(rc.getTeam())) {
-                    friendlySoldiers[friendlySoldiersLength] = rbt;
-                    friendlySoldiersLength++;
-                } else {
-                    enemySoldiers[enemySoldiersLength] = rbt;
-                    enemySoldiersLength++;
+        for(RobotInfo enemy : rc.senseNearbyRobots(rc.getType().visionRadiusSquared, rc.getTeam().opponent())) {
+            switch(enemy.type) {
+            case SOLDIER:
+            case WATCHTOWER:
+                enemySoldiers[enemySoldiersLength] = enemy;
+                enemySoldiersLength++;
+                if(!safeDirs.isEmpty()) {
                     for(Direction d : allDirections) {
-                        if(rc.adjacentLocation(d).distanceSquaredTo(rbt.location) <= rbt.type.actionRadiusSquared) {
+                        if(rc.adjacentLocation(d).distanceSquaredTo(enemy.location) <= enemy.type.actionRadiusSquared) {
                             safeDirs.remove(d);
                         }
                     }
                 }
-            } else {
-                if(rbt.getTeam().equals(rc.getTeam())) {
-                    friendlyNonsoldiers[friendlyNonsoldiersLength] = rbt;
-                    friendlyNonsoldiersLength++;
-                } else {
-                    enemyNonsoldiers[enemyNonsoldiersLength] = rbt;
-                    enemyNonsoldiersLength++;
-                }
+                break;
+            default:
+                enemyNonsoldiers[enemyNonsoldiersLength] = enemy;
+                enemyNonsoldiersLength++;
+                break;
+            } 
+        }
+        for(RobotInfo friend : rc.senseNearbyRobots(rc.getType().visionRadiusSquared, rc.getTeam())) {
+            switch(friend.type) {
+            case SOLDIER:
+            case WATCHTOWER:
+                friendlySoldiers[friendlySoldiersLength] = friend;
+                friendlySoldiersLength++;
+                break;
+            default:
+                friendlyNonsoldiers[friendlyNonsoldiersLength] = friend;
+                friendlyNonsoldiersLength++;
+                break;
             }
         }
-        updateExploreTarget();
+//        updateExploreTarget();
         
         if(safeDirs.size() > 0 && !safeDirs.contains(Direction.CENTER)) {
             soldierAttack();

@@ -60,14 +60,9 @@ abstract public class Robot {
 //    }
     
     public void runRobot() throws GameActionException {
-        final int roundNumBefore = rc.getRoundNum();
 //        doEnemyArchonComm();
             
         runMobilitySpecific();
-        
-        if(rc.getRoundNum() != roundNumBefore) {
-            System.out.println("ROUND NUM INCREASED FROM " + roundNumBefore + " TO " + rc.getRoundNum());
-        }
     }
     
     // Because Direction.allDirections() includes Direction.CENTER
