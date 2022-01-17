@@ -83,6 +83,8 @@ public class Soldier extends Droid {
         
         value -= adjLocRubbleScalar;
         
+        value -= (double)1 / (10 + adjLoc.distanceSquaredTo(exploreTarget));
+        
         MapLocation targetLocOrNull = getBestSoldierLocOrNull();
         if(targetLocOrNull != null) {
             value += (double)10 * amountCloser(targetLocOrNull, adjLoc, rc.getLocation());
@@ -170,6 +172,7 @@ public class Soldier extends Droid {
                 }
             }
         }
+        updateExploreTarget();
         
         final Direction[] allDirections = Direction.allDirections(); // including CENTER
         boolean[] safeDirs = new boolean[allDirections.length];
