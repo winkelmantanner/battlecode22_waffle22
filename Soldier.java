@@ -169,23 +169,36 @@ public class Soldier extends Droid {
         }
         
         final Direction[] allDirections = Direction.allDirections(); // including CENTER
-        Set<Direction> safeDirs = new HashSet<Direction>(Arrays.asList(allDirections));
+        boolean[] safeDirs = new boolean[allDirections.length];
+        for(Direction d : allDirections) {safeDirs[d.ordinal()] = true;}
+        int safeDirCount = allDirections.length;
         if(enemySoldiersLength <= 10) {
             for(int enemySoldierIdx = 0; enemySoldierIdx < enemySoldiersLength; enemySoldierIdx++) {
-                if(!safeDirs.isEmpty()) {
+                if(safeDirCount > 0) {
                     RobotInfo enemySoldier = enemySoldiers[enemySoldierIdx];
                     for(Direction d : allDirections) {
-                        if(rc.adjacentLocation(d).distanceSquaredTo(enemySoldier.location) <= enemySoldier.type.actionRadiusSquared) {
-                            safeDirs.remove(d);
+                        if(safeDirs[d.ordinal()]
+                            && rc.adjacentLocation(d).distanceSquaredTo(enemySoldier.location) <= enemySoldier.type.actionRadiusSquared
+                        ) {
+                            safeDirs[d.ordinal()] = false;
+                            safeDirCount--;
                         }
                     }
                 }
             }
         }
         
-        if(safeDirs.size() > 0 && !safeDirs.contains(Direction.CENTER)) {
+        if(safeDirCount > 0 && !safeDirs[Direction.CENTER.ordinal()]) {
             soldierAttack();
-            soldierMove(safeDirs.toArray(new Direction[safeDirs.size()]));
+            Direction [] safeDirArray = new Direction[safeDirCount];
+            int safeDirArrayLength = 0;
+            for(Direction d : allDirections) {
+                if(safeDirs[d.ordinal()]) {
+                    safeDirArray[safeDirArrayLength] = d;
+                    safeDirArrayLength++;
+                }
+            }
+            soldierMove(safeDirArray);
         } else {
             soldierMove(directions);
             soldierAttack();
