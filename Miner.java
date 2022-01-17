@@ -11,6 +11,25 @@ public class Miner extends Droid {
     
     @Override
     public void runTypeSpecific() throws GameActionException {
+        
+        int sum_x = 0;
+        int sum_y = 0;
+        int count = 0;
+        for(RobotInfo enemy : rc.senseNearbyRobots(rc.getType().visionRadiusSquared, rc.getTeam().opponent())) {
+            if(enemy.type.canAttack()) {
+                sum_x += enemy.location.x;
+                sum_y += enemy.location.y;
+                count++;
+            }
+        }
+        if(count > 0) {
+            MapLocation myLoc = rc.getLocation();
+            exploreTarget = myLoc.translate(
+                (myLoc.x - (sum_x / count)) * 3,
+                (myLoc.y - (sum_y / count)) * 3
+            );
+            exploreMove();
+        }
 
         double maxValue = 0;
         MapLocation bestLoc = null;
@@ -51,16 +70,6 @@ public class Miner extends Droid {
             while (rc.canMineGold(locWithGold)) {
                 rc.mineGold(locWithGold);
                 didMine = true;
-            }
-        }
-        
-        for(RobotInfo enemy : rc.senseNearbyRobots(rc.getType().visionRadiusSquared, rc.getTeam().opponent())) {
-            if(enemy.type.canAttack()) {
-                MapLocation myLoc = rc.getLocation();
-                exploreTarget = myLoc.translate(
-                    (myLoc.x - enemy.location.x) * 3,
-                    (myLoc.y - enemy.location.y) * 3
-                );
             }
         }
         
