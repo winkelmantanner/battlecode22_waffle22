@@ -54,6 +54,16 @@ public class Miner extends Droid {
             }
         }
         
+        for(RobotInfo enemy : rc.senseNearbyRobots(rc.getType().visionRadiusSquared, rc.getTeam().opponent())) {
+            if(enemy.type.canAttack()) {
+                MapLocation myLoc = rc.getLocation();
+                exploreTarget = myLoc.translate(
+                    (myLoc.x - enemy.location.x) * 3,
+                    (myLoc.y - enemy.location.y) * 3
+                );
+            }
+        }
+        
         if(!didMine) {
             exploreMove();
         }
