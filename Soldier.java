@@ -148,8 +148,6 @@ public class Soldier extends Droid {
         enemySoldiersLength = 0;
         friendlyNonsoldiersLength = 0;
         enemyNonsoldiersLength = 0;
-        final Direction[] allDirections = Direction.allDirections();
-        Set<Direction> safeDirs = new HashSet<Direction>(Arrays.asList(allDirections));
         for(RobotInfo rbt : rc.senseNearbyRobots()) {
             if(rbt.getType().equals(RobotType.SOLDIER)) {
                 if(rbt.getTeam().equals(rc.getTeam())) {
@@ -158,13 +156,6 @@ public class Soldier extends Droid {
                 } else {
                     enemySoldiers[enemySoldiersLength] = rbt;
                     enemySoldiersLength++;
-                    if(!safeDirs.isEmpty()) {
-                        for(Direction d : allDirections) {
-                            if(rc.adjacentLocation(d).distanceSquaredTo(rbt.location) <= rbt.type.actionRadiusSquared) {
-                                safeDirs.remove(d);
-                            }
-                        }
-                    }
                 }
             } else {
                 if(rbt.getTeam().equals(rc.getTeam())) {
@@ -176,7 +167,21 @@ public class Soldier extends Droid {
                 }
             }
         }
-//        updateExploreTarget();
+        
+        final Direction[] allDirections = Direction.allDirections(); // including CENTER
+        Set<Direction> safeDirs = new HashSet<Direction>(Arrays.asList(allDirections));
+        if(enemySoldiersLength <= 10) {
+            for(int enemySoldierIdx = 0; enemySoldierIdx < enemySoldiersLength; enemySoldierIdx++) {
+                if(!safeDirs.isEmpty()) {
+                    RobotInfo enemySoldier = enemySoldiers[enemySoldierIdx];
+                    for(Direction d : allDirections) {
+                        if(rc.adjacentLocation(d).distanceSquaredTo(enemySoldier.location) <= enemySoldier.type.actionRadiusSquared) {
+                            safeDirs.remove(d);
+                        }
+                    }
+                }
+            }
+        }
         
         if(safeDirs.size() > 0 && !safeDirs.contains(Direction.CENTER)) {
             soldierAttack();
