@@ -112,11 +112,14 @@ public class Soldier extends Droid {
         RobotInfo targetRbt = null;
         double bestTargetValue = -12345;
         for(RobotInfo enemyRbt : rc.senseNearbyRobots(
-            rc.getType().visionRadiusSquared,
+            rc.getType().actionRadiusSquared,
             rc.getTeam().opponent()
         )) {
             if(rc.canAttack(enemyRbt.location)) {
-                final double value = (double)enemyRbt.getType().health / enemyRbt.getHealth();
+                double value = (double)enemyRbt.getType().health / enemyRbt.getHealth();
+                if(enemyRbt.type.canAttack()) {
+                    value *= 10;
+                }
                 if(value > bestTargetValue) {
                     targetRbt = enemyRbt;
                     bestTargetValue = value;
