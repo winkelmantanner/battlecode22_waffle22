@@ -40,6 +40,11 @@ abstract public class Robot {
         runMobilitySpecific();
     }
     
+    public static double amountCloser(MapLocation targetLocation, MapLocation measuredLocation, MapLocation myLocation) {
+        return Utils.fastSqrt(myLocation.distanceSquaredTo(targetLocation))
+            - Utils.fastSqrt(measuredLocation.distanceSquaredTo(targetLocation));
+    }
+    
     // Because Direction.allDirections() includes Direction.CENTER
     static final Direction[] directions = {
         Direction.NORTH,

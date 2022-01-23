@@ -38,11 +38,6 @@ public class Soldier extends Droid {
         }
     }
     
-    public static double amountCloser(MapLocation targetLocation, MapLocation measuredLocation, MapLocation myLocation) {
-        return (double)(myLocation.distanceSquaredTo(targetLocation) - measuredLocation.distanceSquaredTo(targetLocation))
-            / (1 + myLocation.distanceSquaredTo(targetLocation));
-    }
-    
     protected double evaluateDirForMove(Direction d) throws GameActionException {
         double value = 0;
         MapLocation adjLoc = rc.adjacentLocation(d);
@@ -66,16 +61,6 @@ public class Soldier extends Droid {
                 / adjLocRubbleScalar;
         }
         
-    //                final double ratioOfHealthLost = (double)(rc.getType().health - rc.getHealth()) / rc.getType().health;
-    //                for(int friendlyNonsoldierIdx = 0; friendlyNonsoldierIdx < friendlyNonsoldiersLength; friendlyNonsoldierIdx++) {
-    //                    RobotInfo friendlyNonsoldier = friendlyNonsoldiers[friendlyNonsoldierIdx];
-    //                    if(friendlyNonsoldier.type.equals(RobotType.ARCHON)
-    //                            && adjLoc.distanceSquaredTo(friendlyNonsoldier.location) > friendlyNonsoldier.type.actionRadiusSquared
-    //                    ) {
-    //                        value += 10 * ratioOfHealthLost * amountCloser(spawnLoc, adjLoc, rc.getLocation());
-    //                    }
-    //                }
-    //                
         for(int enemyNonsoldierIdx = 0; enemyNonsoldierIdx < enemyNonsoldiersLength; enemyNonsoldierIdx++) {
             RobotInfo enemyNonsoldier = enemyNonsoldiers[enemyNonsoldierIdx];
             value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
@@ -87,7 +72,8 @@ public class Soldier extends Droid {
         
         MapLocation targetLocOrNull = getBestSoldierLocOrNull();
         if(targetLocOrNull != null) {
-            value += (double)10 * amountCloser(targetLocOrNull, adjLoc, rc.getLocation());
+            value += (1 - (double)1 / (1 + friendlySoldiersLength))
+                * amountCloser(targetLocOrNull, adjLoc, rc.getLocation());
         }
         
         return value;
