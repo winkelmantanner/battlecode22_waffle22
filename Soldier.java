@@ -66,6 +66,18 @@ public class Soldier extends Droid {
             value += enemyNonsoldier.type.health * 0.1 / adjLoc.distanceSquaredTo(enemyNonsoldier.location);
         }
         
+        int occupiedNeighborCount = 0;
+        for(Direction d2 : directions) {
+            if(rc.canSenseLocation(adjLoc.add(d2))
+                && rc.canSenseRobotAtLocation(adjLoc.add(d2))
+            ) {
+                occupiedNeighborCount++;
+            }
+        }
+        if(directions.length - occupiedNeighborCount > 2) {
+            value += 3;
+        }
+        
         value -= adjLocRubbleScalar;
         
         value -= (double)1 / (10 + adjLoc.distanceSquaredTo(exploreTarget));
