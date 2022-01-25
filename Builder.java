@@ -9,5 +9,11 @@ public class Builder extends Droid {
     
     @Override
     public void runTypeSpecific() throws GameActionException {
+        exploreMove();
+        if(rc.canSenseLocation(rc.getLocation())
+            && rc.senseLead(rc.getLocation()) == 0
+        ) {
+            rc.disintegrate();
+        }
     }
 }

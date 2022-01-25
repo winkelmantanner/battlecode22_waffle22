@@ -16,7 +16,8 @@ public class Archon extends Building {
     RobotType [] ARCHON_BUILD_CHOOSER = {
         RobotType.MINER,
         RobotType.SOLDIER,
-        RobotType.SOLDIER
+        RobotType.SOLDIER,
+        RobotType.BUILDER
     };
     
     @Override
